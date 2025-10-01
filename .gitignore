@@ -1,0 +1,58 @@
+# ======================
+# Java / Maven / Spring Boot
+# ======================
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# ======================
+# IDE / Editor configs
+# ======================
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# VSCode
+.vscode/
+
+# ======================
+# Logs / Temp
+# ======================
+*.log
+logs/
+*.out
+*.tmp
+
+# ======================
+# Node / Frontend (if you later add npm/yarn)
+# ======================
+node_modules/
+dist/
+
+# ======================
+# OS Generated files
+# ======================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ======================
+# Sensitive / Secrets
+# ======================
+application.properties
+application.yml
+.env
+
+# ======================
+# Database dumps (optional, keep only schema & sample data)
+# ======================
+*.sql
+!db/bookstore_models.sql
+!db/sample_data.sql
