@@ -8,7 +8,6 @@ class BackendApplicationTests {
 
     @Test
     void contextLoads() {
-        // This test just checks if Spring Boot context starts successfully
+        // This will simply start the Spring context to ensure everything loads correctly
     }
-
 }
