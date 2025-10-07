@@ -9,10 +9,27 @@ import java.util.Optional;
 @Service
 public class BookService {
     private final BookRepository repo;
+
     public BookService(BookRepository repo) { this.repo = repo; }
 
-    public List<Book> getAll() { return repo.findAll(); }
-    public Optional<Book> getById(Integer id) { return repo.findById(id); }
-    public Book save(Book b) { return repo.save(b); }
-    public void delete(Integer id) { repo.deleteById(id); }
+    public List<Book> getAll() { 
+        return repo.findAll(); 
+    }
+
+    public Optional<Book> getById(Integer id) { 
+        return repo.findById(id); 
+    }
+
+    public Book save(Book b) { 
+        return repo.save(b); 
+    }
+
+    public void delete(Integer id) { 
+        repo.deleteById(id); 
+    }
+
+    // 🔹 New method for search
+    public List<Book> searchBooks(String query) {
+        return repo.findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(query, query);
+    }
 }

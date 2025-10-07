@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Books | Reader's Heaven</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-container">
+      <div class="logo">
+        <a href="index.html"><img src="assets/images/logo.png" alt="Reader's Heaven Logo"></a>
+      </div>
+
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search books, authors, categories...">
+        <button onclick="searchBooks()">🔍</button>
+      </div>
+
+      <div class="header-right" id="header-right">
+        <a href="cart.html">🛒 Cart</a>
+        <a href="login.html">👤 Login</a>
+      </div>
+    </div>
+  </header>
+
+  <main style="max-width:1200px; margin:50px auto; padding:20px;">
+    <div style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:20px;">
+      <select id="categoryFilter" onchange="filterBooks()">
+        <option value="">All Categories</option>
+        <option value="Fiction">Fiction</option>
+        <option value="Non-fiction">Non-fiction</option>
+        <option value="Science">Science</option>
+        <option value="Technology">Technology</option>
+      </select>
+
+      <select id="priceFilter" onchange="filterBooks()">
+        <option value="">Sort by Price</option>
+        <option value="low">Low to High</option>
+        <option value="high">High to Low</option>
+      </select>
+    </div>
+
+    <div class="book-list" id="bookGrid"></div>
+  </main>
+
+  <script src="js/header.js"></script>
+  <script src="js/books.js"></script>
+</body>
+</html>

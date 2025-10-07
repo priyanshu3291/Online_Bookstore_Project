@@ -3,41 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Online Bookstore</title>
+  <title>Reader's Heaven | Online Bookstore</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-  <!-- Header -->
   <header class="header">
     <div class="header-container">
-      <!-- Logo -->
       <div class="logo">
-        <img src="assets/images/logo.png">
-      Reader's Heaven
-    </div>
+        <a href="index.html">
+          <img src="assets/images/logo.png" alt="Reader's Heaven Logo">
+        </a>
+      </div>
 
-      <!-- Search Bar -->
       <div class="search-bar">
-        <input type="text" placeholder="Search books, authors, categories...">
-        <button>🔍</button>
+        <input type="text" id="searchInput" placeholder="Search books, authors, categories...">
+        <button id="searchBtn">🔍</button>
       </div>
 
-      <!-- Right Side: Cart & Login -->
-      <div class="header-right">
-        <a href="cart.html">🛒 Cart</a>
-        <a href="login.html">👤 Login</a>
+      <div class="header-right" id="header-right">
+        <a href="cart.html" id="cartLink">🛒 Cart</a>
+        <a href="login.html" id="loginLink">👤 Login</a>
       </div>
     </div>
- 
+  </header>
 
-  <!-- Main Content -->
   <main>
     <section class="hero">
-      <h1>Welcome to the Reader's Heaven</h1>
+      <h1>Welcome to Reader's Heaven</h1>
       <p>Discover your next great read today!</p>
     </section>
+
+    <section class="book-list" id="bookList"></section>
   </main>
 
+  <script src="js/header.js"></script>
+  <script src="js/index.js"></script>
 </body>
 </html>

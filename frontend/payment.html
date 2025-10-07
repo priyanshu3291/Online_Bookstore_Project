@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment | Reader's Heaven</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-container">
+      <div class="logo">
+        <a href="index.html"><img src="assets/images/logo.png" alt="Reader's Heaven Logo"></a>
+      </div>
+
+      <div class="header-right" id="header-right">
+        <a href="cart.html">🛒 Cart</a>
+        <a href="login.html">👤 Login</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="cart-container" style="text-align:center;">
+    <h2>Order Summary</h2>
+
+    <table class="cart-table" style="margin: 20px auto; max-width:600px;">
+      <thead>
+        <tr>
+          <th>Book</th>
+          <th>Quantity</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody id="order-items"></tbody>
+    </table>
+
+    <p style="margin-top:20px; font-size:1.2rem;">
+      <strong>Grand Total:</strong> ₹<span id="grand-total">0</span>
+    </p>
+
+    <div style="margin-top:30px;">
+      <p style="font-size:1.1rem; color:var(--dark);">
+        Your order has been placed using <strong>Cash on Delivery (COD)</strong>.
+      </p>
+      <p>Thank you for shopping at Reader's Heaven!</p>
+      <button class="btn" onclick="window.location.href='index.html'">Return to Home</button>
+    </div>
+  </main>
+
+  <script src="js/header.js"></script>
+  <script>
+    async function loadOrderSummary() {
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      const orderTable = document.getElementById("order-items");
+      const grandTotalEl = document.getElementById("grand-total");
+
+      if (cart.length === 0) {
+        orderTable.innerHTML = `<tr><td colspan="3">No items in order.</td></tr>`;
+        grandTotalEl.textContent = "0";
+        return;
+      }
+
+      let grandTotal = 0;
+      orderTable.innerHTML = "";
+
+      for (const item of cart) {
+        const res = await fetch(`http://localhost:8080/api/books/${item.id}`);
+        const book = await res.json();
+        const total = book.price * item.quantity;
+        grandTotal += total;
+
+        orderTable.innerHTML += `
+          <tr>
+            <td>${book.title}</td>
+            <td>${item.quantity}</td>
+            <td>₹${total}</td>
+          </tr>
+        `;
+      }
+
+      grandTotalEl.textContent = grandTotal.toFixed(2);
+
+      // Clear cart after "placing order"
+      localStorage.removeItem("cart");
+    }
+
+    document.addEventListener("DOMContentLoaded", loadOrderSummary);
+  </script>
+</body>
+</html>
