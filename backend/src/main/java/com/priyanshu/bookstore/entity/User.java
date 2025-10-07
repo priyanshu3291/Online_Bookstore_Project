@@ -4,18 +4,15 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "Customers")
+@Table(name = "users")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Customer {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;  // now it's just 'id'
-
-    @Column(nullable = false)
-    private String fullName;  // now 'fullName' instead of 'full_name'
+    private Long id;
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -25,10 +22,5 @@ public class Customer {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role = Role.CUSTOMER;
-
-    public enum Role {
-        CUSTOMER,
-        ADMIN
-    }
+    private Role role;
 }

@@ -33,7 +33,7 @@ public class CustomerController {
 
     @PutMapping("/{id}")
     public Customer update(@PathVariable Integer id, @Valid @RequestBody Customer c) {
-        c.setCustomer_id(id);
+        c.setId(id);
         c.setPassword(PasswordUtil.hashPassword(c.getPassword())); // hash password on update
         return service.save(c);
     }

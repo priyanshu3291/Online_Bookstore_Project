@@ -9,8 +9,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity; // ✅ add this import
 
 @SpringBootApplication
+@EnableMethodSecurity // ✅ enable method-level security (for @PreAuthorize etc.)
 public class BookstoreBackendApplication {
 
     public static void main(String[] args) {
@@ -27,7 +29,7 @@ public class BookstoreBackendApplication {
                 Admin admin = new Admin();
                 admin.setFull_name("Super Admin");
                 admin.setEmail("admin@bookstore.com");
-                admin.setPassword(PasswordUtil.hashPassword("admin123")); 
+                admin.setPassword(PasswordUtil.hashPassword("admin123"));
                 adminService.save(admin);
                 System.out.println("⚡ Default admin created: admin@bookstore.com / admin123");
             }
