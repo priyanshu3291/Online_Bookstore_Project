@@ -3,42 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wishlist || Reader's Heaven</title>
+  <title>Wishlist | Reader's Heaven</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <!-- Navbar (reuse your existing navbar) -->
-  <header>
-    <nav>
-      <a href="index.html" class="logo">Reader's Heaven</a>
-      <ul>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="cart.html">Cart</a></li>
-        <li><a href="wishlist.html" class="active">Wishlist</a></li>
-      </ul>
-    </nav>
+
+  <header class="header">
+    <div class="header-container">
+      <div class="logo">
+        <a href="index.html"><img src="assets/images/logo.png" alt="Reader's Heaven Logo"></a>
+      </div>
+
+      <div class="header-right" id="header-right"></div>
+    </div>
   </header>
 
   <main class="wishlist-container">
     <h1>My Wishlist</h1>
-    <div class="wishlist-items">
-      <!-- Example wishlist item -->
-      <div class="wishlist-item">
-        <img src="images/book1.jpg" alt="Book 1">
-        <div class="item-details">
-          <h3>Book Title 1</h3>
-          <p>Author Name</p>
-          <p>$15.99</p>
-          <div class="wishlist-actions">
-            <button class="move-to-cart">Move to Cart</button>
-            <button class="remove-item">Remove</button>
-          </div>
-        </div>
-      </div>
-      <!-- Add more items dynamically via JS or backend -->
+    <div class="wishlist-items" id="wishlist-items">
+      <!-- Items will be dynamically inserted via wishlist.js -->
     </div>
   </main>
 
+  <script src="js/header.js"></script>
   <script src="js/wishlist.js"></script>
 </body>
 </html>

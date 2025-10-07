@@ -3,65 +3,54 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Register | Reader’s Heaven</title>
+  <title>Register | Reader's Heaven</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+
   <header class="header">
     <div class="header-container">
       <div class="logo">
         <a href="index.html"><img src="assets/images/logo.png" alt="Reader's Heaven Logo"></a>
       </div>
-
-      <div class="search-bar">
-        <input type="text" placeholder="Search books, authors, categories...">
-        <button>🔍</button>
-      </div>
-
-      <div class="header-right" id="header-right">
-        <a href="cart.html">🛒 Cart</a>
-        <a href="login.html">👤 Login</a>
-      </div>
+      <div class="header-right" id="header-right"></div>
     </div>
   </header>
 
-  <section class="auth-container">
+  <main class="auth-container">
     <div class="auth-box">
       <h2>Create an Account</h2>
       <form id="registerForm">
         <div class="input-group">
           <label for="fullname">Full Name <span class="required">*</span></label>
-          <input type="text" id="fullname" name="fullname" placeholder="Enter your full name" required>
+          <input type="text" id="fullname" placeholder="Enter your full name" required>
         </div>
         <div class="input-group">
           <label for="email">Email <span class="required">*</span></label>
-          <input type="email" id="email" name="email" placeholder="Enter your email" required>
+          <input type="email" id="email" placeholder="Enter your email" required>
         </div>
         <div class="input-group">
           <label for="password">Password <span class="required">*</span></label>
-          <input type="password" id="password" name="password" placeholder="Enter your password" required>
+          <input type="password" id="password" placeholder="Enter your password" required>
         </div>
         <div class="input-group">
           <label for="address">Address <span class="required">*</span></label>
-          <textarea id="address" name="address" placeholder="Enter your address" rows="3" required></textarea>
+          <textarea id="address" placeholder="Enter your address" rows="3" required></textarea>
         </div>
         <div class="input-group">
           <label for="contact">Contact Number <span class="required">*</span></label>
-          <input type="tel" id="contact" name="contact" placeholder="Enter your contact number" required>
+          <input type="tel" id="contact" placeholder="Enter your contact number" required>
         </div>
-
         <button type="submit" class="btn">Register</button>
-
         <p class="redirect-text">Already have an account? <a href="login.html">Login here</a></p>
       </form>
     </div>
-  </section>
+  </main>
 
   <script src="js/header.js"></script>
   <script>
     document.querySelector("#registerForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-
       const data = {
         full_name: document.querySelector("#fullname").value,
         email: document.querySelector("#email").value,
@@ -69,14 +58,12 @@
         address: document.querySelector("#address").value,
         contact_number: document.querySelector("#contact").value
       };
-
       try {
         const res = await fetch("http://localhost:8080/api/auth/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data)
         });
-
         if (res.ok) {
           alert("Registration successful! Redirecting to login...");
           window.location.href = "login.html";

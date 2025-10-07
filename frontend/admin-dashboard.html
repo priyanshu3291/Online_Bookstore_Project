@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | Reader's Heaven</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background-color: #f0f0f0; }
+    button { margin-right: 5px; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-container">
+      <div class="logo"><a href="#"><img src="assets/images/logo.png" alt="Reader's Heaven Logo"></a></div>
+      <div class="header-right">
+        <a href="index.html" id="logoutBtn">Logout</a>
+      </div>
+    </div>
+  </header>
+
+  <main style="max-width:1000px; margin:30px auto;">
+    <h2>Admin Dashboard</h2>
+    <button onclick="window.location.href='admin-add-book.html'">Add New Book</button>
+
+    <table id="booksTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Title</th>
+          <th>Author</th>
+          <th>Category</th>
+          <th>Price (₹)</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Books will be dynamically loaded here -->
+      </tbody>
+    </table>
+  </main>
+
+  <script src="js/admin-dashboard.js"></script>
+</body>
+</html>

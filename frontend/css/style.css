@@ -670,3 +670,42 @@
   color: #5a7375;
   margin-top: 2rem;
 }
+
+/* === Admin Dashboard Styles === */
+#booksTableContainer, #ordersTableContainer {
+  margin-top: 20px;
+  overflow-x: auto;
+}
+
+#booksTableContainer table, #ordersTableContainer table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#booksTableContainer th, #booksTableContainer td,
+#ordersTableContainer th, #ordersTableContainer td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: left;
+}
+
+#booksTableContainer th, #ordersTableContainer th {
+  background-color: #f5f5f5;
+}
+
+#booksTableContainer button, #ordersTableContainer button,
+#addBookBtn {
+  background-color: #0077B6;
+  color: #fff;
+  border: none;
+  padding: 5px 12px;
+  margin: 2px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#booksTableContainer button:hover,
+#ordersTableContainer button:hover,
+#addBookBtn:hover {
+  background-color: #005f87;
+}

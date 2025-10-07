@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Orders | Reader's Heaven</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background-color: #f0f0f0; }
+    select { padding: 5px; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-container">
+      <div class="logo"><a href="#"><img src="assets/images/logo.png" alt="Reader's Heaven Logo"></a></div>
+      <div class="header-right">
+        <a href="admin-dashboard.html">Dashboard</a>
+        <a href="#" id="logoutBtn">Logout</a>
+      </div>
+    </div>
+  </header>
+
+  <main style="max-width:1000px; margin:30px auto;">
+    <h2>All Customer Orders</h2>
+    <table id="ordersTable">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Customer Name</th>
+          <th>Book</th>
+          <th>Quantity</th>
+          <th>Total (₹)</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Orders will be dynamically loaded -->
+      </tbody>
+    </table>
+  </main>
+
+  <script src="js/admin-orders.js"></script>
+</body>
+</html>

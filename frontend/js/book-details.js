@@ -29,9 +29,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       </div>
     `;
 
-    // Add to Cart
-    document.getElementById("addCartBtn").addEventListener("click", (e) => {
-      addToCart(e, parseInt(book.book_id));
+    document.getElementById("addCartBtn").addEventListener("click", () => {
+      addToCart(parseInt(book.book_id));
     });
 
   } catch (err) {
@@ -48,11 +47,22 @@ function addToCart(event, bookId) {
     return;
   }
 
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  // Get user-specific cart from localStorage
+  const cartKey = `cart_${user.id}`;
+  const cart = JSON.parse(localStorage.getItem(cartKey)) || [];
+
   const existing = cart.find(i => i.id === bookId);
   if (existing) existing.quantity += 1;
-  else cart.push({id: bookId, quantity: 1});
-  localStorage.setItem("cart", JSON.stringify(cart));
+  else cart.push({ id: bookId, quantity: 1 });
+
+  localStorage.setItem(cartKey, JSON.stringify(cart));
+
+  // Update the cart count dynamically if present
+  const cartCountEl = document.getElementById("cartCount");
+  if (cartCountEl) {
+    cartCountEl.textContent = cart.reduce((sum, i) => sum + i.quantity, 0);
+  }
 
   alert("Book added to cart!");
 }
+

@@ -7,21 +7,14 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+
   <header class="header">
     <div class="header-container">
       <div class="logo">
         <a href="index.html"><img src="assets/images/logo.png" alt="Reader's Heaven Logo"></a>
       </div>
 
-      <div class="search-bar">
-        <input type="text" placeholder="Search books, authors, categories...">
-        <button>🔍</button>
-      </div>
-
-      <div class="header-right" id="header-right">
-        <a href="cart.html">🛒 Cart</a>
-        <a href="login.html">👤 Login</a>
-      </div>
+      <div class="header-right" id="header-right"></div>
     </div>
   </header>
 
@@ -51,78 +44,6 @@
   </section>
 
   <script src="js/header.js"></script>
-  <script>
-    async function loadCart() {
-      const cart = JSON.parse(localStorage.getItem("cart")) || [];
-      const user = JSON.parse(localStorage.getItem("user"));
-      const table = document.getElementById("cart-items");
-      const totalEl = document.getElementById("grand-total");
-
-      if (cart.length === 0) {
-        table.innerHTML = `<tr><td colspan="6">Your cart is empty.</td></tr>`;
-        totalEl.textContent = 0;
-        return;
-      }
-
-      let grandTotal = 0;
-      table.innerHTML = "";
-
-      for (const item of cart) {
-        const res = await fetch(`http://localhost:8080/api/books/${item.id}`);
-        const book = await res.json();
-        const total = book.price * item.quantity;
-        grandTotal += total;
-
-        table.innerHTML += `
-          <tr>
-            <td>${book.title}</td>
-            <td>${book.author}</td>
-            <td>₹${book.price}</td>
-            <td>
-              <input type="number" min="1" value="${item.quantity}" onchange="updateQuantity(${item.id}, this.value)">
-            </td>
-            <td>₹${total}</td>
-            <td><button class="remove-btn" onclick="removeItem(${item.id})">Remove</button></td>
-          </tr>
-        `;
-      }
-
-      totalEl.textContent = grandTotal.toFixed(2);
-    }
-
-    function updateQuantity(id, qty) {
-      let cart = JSON.parse(localStorage.getItem("cart")) || [];
-      const item = cart.find(i => i.id === id);
-      if (item) item.quantity = parseInt(qty);
-      localStorage.setItem("cart", JSON.stringify(cart));
-      loadCart();
-    }
-
-    function removeItem(id) {
-      let cart = JSON.parse(localStorage.getItem("cart")) || [];
-      cart = cart.filter(i => i.id !== id);
-      localStorage.setItem("cart", JSON.stringify(cart));
-      loadCart();
-    }
-
-    function proceedToPayment() {
-      const user = JSON.parse(localStorage.getItem("user"));
-      if (!user) {
-        alert("Please login to continue.");
-        window.location.href = "login.html";
-        return;
-      }
-
-      const cart = JSON.parse(localStorage.getItem("cart")) || [];
-      if (cart.length === 0) {
-        alert("Your cart is empty.");
-        return;
-      }
-
-      window.location.href = "payment.html";
-    }
-
-    document.addEventListener("DOMContentLoaded", loadCart);
-  </script>
+  <script src="js/cart.js"></script>
 </body>
 </html>

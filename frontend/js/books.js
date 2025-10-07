@@ -32,26 +32,22 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `).join("");
 
-    // Add click listeners
     document.querySelectorAll(".book-card").forEach(card => {
-      const bookId = card.dataset.id;
+      const bookId = parseInt(card.dataset.id);
 
-      // Click on card navigates to details
       card.addEventListener("click", e => {
         if (!e.target.classList.contains("cart-btn")) {
           window.location.href = `book-details.html?id=${bookId}`;
         }
       });
 
-      // Click on "Add to Cart"
       card.querySelector(".cart-btn").addEventListener("click", e => {
         e.stopPropagation();
-        addToCart(e, parseInt(bookId));
+        addToCart(bookId);
       });
     });
   }
 
-  // Search
   const searchInput = document.getElementById("searchInput");
   const searchBtn = document.getElementById("searchBtn");
   if (searchBtn) {
@@ -60,13 +56,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Filter by category / price (if on books.html)
   window.filterBooks = () => {
     let filtered = [...allBooks];
     const category = document.getElementById("categoryFilter")?.value;
     const priceSort = document.getElementById("priceFilter")?.value;
 
-    if (category) filtered = filtered.filter(b => b.category?.toLowerCase() === category.toLowerCase());
+    if (category) filtered = filtered.filter(b => (b.category || '').toLowerCase() === category.toLowerCase());
     if (priceSort === "low") filtered.sort((a,b) => a.price - b.price);
     else if (priceSort === "high") filtered.sort((a,b) => b.price - a.price);
 
@@ -84,11 +79,28 @@ function addToCart(event, bookId) {
     return;
   }
 
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  // Get user-specific cart from localStorage
+  const cartKey = `cart_${user.id}`;
+  const cart = JSON.parse(localStorage.getItem(cartKey)) || [];
+
   const existing = cart.find(i => i.id === bookId);
   if (existing) existing.quantity += 1;
-  else cart.push({id: bookId, quantity:1});
-  localStorage.setItem("cart", JSON.stringify(cart));
+  else cart.push({ id: bookId, quantity: 1 });
+
+  localStorage.setItem(cartKey, JSON.stringify(cart));
+
+  // Update the cart count dynamically if present
+  const cartCountEl = document.getElementById("cartCount");
+  if (cartCountEl) {
+    cartCountEl.textContent = cart.reduce((sum, i) => sum + i.quantity, 0);
+  }
 
   alert("Book added to cart!");
+}
+
+
+function updateCartCount() {
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const cartLink = document.getElementById("cartLink");
+  if (cartLink) cartLink.innerHTML = `🛒 Cart (${cart.reduce((a,b)=>a+b.quantity,0)})`;
 }
