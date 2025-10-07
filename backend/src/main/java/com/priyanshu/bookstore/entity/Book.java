@@ -16,6 +16,10 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer book_id;
 
+    @Column(nullable = true)
+    private String image; // URL or path to the book image
+
+
     @NotBlank(message = "Title is required")
     @Column(nullable = false)
     private String title;
