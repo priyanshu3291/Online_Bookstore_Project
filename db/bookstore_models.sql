@@ -87,6 +87,23 @@ END//
 DELIMITER ;
 
 -- ============================
+-- Wishlist
+-- ============================
+CREATE TABLE Wishlist (
+    wishlist_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT NOT NULL,
+    book_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
+        ON DELETE CASCADE,
+    FOREIGN KEY (book_id) REFERENCES Books(book_id)
+        ON DELETE CASCADE,
+    UNIQUE KEY unique_wishlist(customer_id, book_id)
+);
+
+
+
+-- ============================
 -- Orders Tables
 -- ============================
 CREATE TABLE Orders (

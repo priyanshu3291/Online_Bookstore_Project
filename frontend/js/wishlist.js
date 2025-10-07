@@ -1,14 +1,12 @@
-const userId = 1; // replace with logged-in user's ID dynamically
+const customerId = 1; // replace with logged-in user
 
 document.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('wishlist-items');
 
-  // Fetch wishlist items from backend
-  fetch(`/api/wishlist/${userId}`)
+  fetch(`/api/wishlist/${customerId}`)
     .then(res => res.json())
     .then(data => {
       container.innerHTML = '';
-
       if (data.length === 0) {
         container.innerHTML = '<p class="empty-message">Your wishlist is empty 😢</p>';
         return;
@@ -24,8 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
             <p>${item.author}</p>
             <p>$${item.price}</p>
             <div class="wishlist-actions">
-              <button class="move-to-cart" data-id="${item.id}">Move to Cart</button>
-              <button class="remove-item" data-id="${item.id}">Remove</button>
+              <button class="move-to-cart" data-id="${item.book_id}" data-wishlist="${item.wishlist_id}">Move to Cart</button>
+              <button class="remove-item" data-id="${item.wishlist_id}">Remove</button>
             </div>
           </div>
         `;
@@ -36,7 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
   function addEventListeners() {
-    // Remove item
     document.querySelectorAll('.remove-item').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const id = e.target.dataset.id;
@@ -46,19 +43,18 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    // Move item to cart
     document.querySelectorAll('.move-to-cart').forEach(btn => {
       btn.addEventListener('click', (e) => {
-        const id = e.target.dataset.id;
+        const bookId = e.target.dataset.id;
+        const wishlistId = e.target.dataset.wishlist;
+
         fetch(`/api/cart/`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: userId, bookId: id })
+          body: JSON.stringify({ customer_id: customerId, book_id: parseInt(bookId), quantity: 1 })
         })
-        .then(() => {
-          alert('Moved to cart!');
-          e.target.closest('.wishlist-item').remove();
-        })
+        .then(() => fetch(`/api/wishlist/${wishlistId}`, { method: 'DELETE' }))
+        .then(() => e.target.closest('.wishlist-item').remove())
         .finally(checkEmpty);
       });
     });

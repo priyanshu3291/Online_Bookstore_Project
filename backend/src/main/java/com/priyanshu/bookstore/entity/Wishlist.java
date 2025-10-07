@@ -1,32 +1,23 @@
 package com.priyanshu.bookstore.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "wishlist")
+@Table(name = "Wishlist")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Wishlist {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer wishlist_id;
 
-    private Integer userId; // user who owns the wishlist
+    private Integer customer_id;
+    private Integer book_id;
 
-    private Integer bookId; // book added to wishlist
-
-    public Wishlist() {}
-
-    public Wishlist(Integer userId, Integer bookId) {
-        this.userId = userId;
-        this.bookId = bookId;
-    }
-
-    public Integer getId() { return id; }
-    public void setId(Integer id) { this.id = id; }
-
-    public Integer getUserId() { return userId; }
-    public void setUserId(Integer userId) { this.userId = userId; }
-
-    public Integer getBookId() { return bookId; }
-    public void setBookId(Integer bookId) { this.bookId = bookId; }
+    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private LocalDateTime created_at;
 }
