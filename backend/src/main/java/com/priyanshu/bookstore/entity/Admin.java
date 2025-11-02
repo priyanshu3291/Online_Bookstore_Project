@@ -29,6 +29,10 @@ public class Admin {
     @Column(nullable = false, length = 64)
     private String password;
 
+    // ✅ NEW FIELD
+    @Column(nullable = false)
+    private String role = "ROLE_ADMIN"; // Default role for admin
+
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime created_at;
 }

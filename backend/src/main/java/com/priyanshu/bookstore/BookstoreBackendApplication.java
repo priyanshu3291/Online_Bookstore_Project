@@ -2,17 +2,16 @@ package com.priyanshu.bookstore;
 
 import com.priyanshu.bookstore.entity.Admin;
 import com.priyanshu.bookstore.entity.Book;
-import com.priyanshu.bookstore.util.PasswordUtil;
 import com.priyanshu.bookstore.service.AdminService;
 import com.priyanshu.bookstore.service.BookService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity; // ✅ add this import
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 
 @SpringBootApplication
-@EnableMethodSecurity // ✅ enable method-level security (for @PreAuthorize etc.)
+@EnableMethodSecurity
 public class BookstoreBackendApplication {
 
     public static void main(String[] args) {
@@ -29,7 +28,7 @@ public class BookstoreBackendApplication {
                 Admin admin = new Admin();
                 admin.setFull_name("Super Admin");
                 admin.setEmail("admin@bookstore.com");
-                admin.setPassword(PasswordUtil.hashPassword("admin123"));
+                admin.setPassword("admin123"); // plain text for demo
                 adminService.save(admin);
                 System.out.println("⚡ Default admin created: admin@bookstore.com / admin123");
             }

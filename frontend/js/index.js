@@ -1,57 +1,85 @@
+// Base URL for backend API
+const API_BASE = "http://localhost:8080";
+
 document.addEventListener("DOMContentLoaded", () => {
 
+  // ------------------------------
+  // FETCH BOOKS
+  // ------------------------------
   async function fetchBooks(query = "") {
     try {
-      const res = await fetch(`/api/books?search=${encodeURIComponent(query)}`);
-      const books = await res.json();
-      const list = document.getElementById("bookList");
+      const response = await fetch(`${API_BASE}/api/books?search=${encodeURIComponent(query)}`);
+      if (!response.ok) throw new Error("Failed to fetch books");
+
+      const books = await response.json();
+      const bookList = document.getElementById("bookList");
+
+      if (!bookList) return;
 
       if (books.length === 0) {
-        list.innerHTML = `<p style="text-align:center; color:var(--dark); font-size:1.2rem; margin-top:2rem;">
-                            No books found. Try adding some!
-                          </p>`;
+        bookList.innerHTML = `
+          <p style="text-align:center; color:var(--dark); font-size:1.2rem; margin-top:2rem;">
+            No books found. Try adding some!
+          </p>`;
         return;
       }
 
-      list.innerHTML = books.map(b => `
-        <div class="book-card" data-id="${b.book_id}">
-          <img src="${b.image || 'assets/images/default-book.jpg'}" alt="${b.title}" style="cursor:pointer;">
-          <h3 style="cursor:pointer;">${b.title}</h3>
-          <p><strong>${b.author}</strong></p>
-          <p>₹${b.price}</p>
+      bookList.innerHTML = books.map(book => `
+        <div class="book-card" data-id="${book.book_id}">
+          <img src="${book.image || 'assets/images/default-book.jpg'}" alt="${book.title}" style="cursor:pointer;">
+          <h3 style="cursor:pointer;">${book.title}</h3>
+          <p><strong>${book.author}</strong></p>
+          <p>₹${book.price}</p>
           <button class="cart-btn">Add to Cart</button>
         </div>
       `).join("");
 
+      // Attach event listeners
       document.querySelectorAll(".book-card").forEach(card => {
         const bookId = card.dataset.id;
 
+        // Go to book details on image/title click
         card.querySelector('img').addEventListener('click', () => {
           window.location.href = `book-details.html?id=${bookId}`;
         });
+
         card.querySelector('h3').addEventListener('click', () => {
           window.location.href = `book-details.html?id=${bookId}`;
         });
 
+        // Add to cart
         card.querySelector(".cart-btn").addEventListener("click", (e) => {
           e.stopPropagation();
           addToCart(bookId);
         });
       });
 
-    } catch (e) {
-      console.error("Error fetching books:", e);
+    } catch (error) {
+      console.error("Error fetching books:", error);
     }
   }
 
-  document.getElementById("searchBtn").addEventListener("click", () => {
-    const q = document.getElementById("searchInput").value.trim();
-    fetchBooks(q);
-  });
+  // ------------------------------
+  // SEARCH FUNCTIONALITY
+  // ------------------------------
+  const searchBtn = document.getElementById("searchBtn");
+  if (searchBtn) {
+    searchBtn.addEventListener("click", () => {
+      const query = document.getElementById("searchInput").value.trim();
+      fetchBooks(query);
+    });
+  }
 
+  // ------------------------------
+  // INITIAL LOAD
+  // ------------------------------
   fetchBooks();
 });
 
+
+// ------------------------------
+// ADD TO CART FUNCTION
+// ------------------------------
 async function addToCart(bookId) {
   const user = JSON.parse(localStorage.getItem("user"));
   if (!user) {
@@ -60,241 +88,28 @@ async function addToCart(bookId) {
     return;
   }
 
-  const res = await fetch(`/api/cart/`, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ customer_id: user.id, book_id: parseInt(bookId), quantity: 1 })
-  });
+  try {
+    const response = await fetch(`${API_BASE}/api/cart/`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        customer_id: user.id,
+        book_id: parseInt(bookId),
+        quantity: 1
+      })
+    });
 
-  if (res.ok) {
-    alert("Book added to cart!");
-    // Update header cart count
-    const cartCountElem = document.getElementById("cartCount");
-    if (cartCountElem) cartCountElem.textContent = parseInt(cartCountElem.textContent) + 1;
-  }
-}
-document.addEventListener("DOMContentLoaded", () => {
-
-  async function fetchBooks(query = "") {
-    try {
-      const res = await fetch(`/api/books?search=${encodeURIComponent(query)}`);
-      const books = await res.json();
-      const list = document.getElementById("bookList");
-
-      if (books.length === 0) {
-        list.innerHTML = `<p style="text-align:center; color:var(--dark); font-size:1.2rem; margin-top:2rem;">
-                            No books found. Try adding some!
-                          </p>`;
-        return;
+    if (response.ok) {
+      alert("Book added to cart!");
+      const cartCountElem = document.getElementById("cartCount");
+      if (cartCountElem) {
+        cartCountElem.textContent = parseInt(cartCountElem.textContent) + 1;
       }
-
-      list.innerHTML = books.map(b => `
-        <div class="book-card" data-id="${b.book_id}">
-          <img src="${b.image || 'assets/images/default-book.jpg'}" alt="${b.title}" style="cursor:pointer;">
-          <h3 style="cursor:pointer;">${b.title}</h3>
-          <p><strong>${b.author}</strong></p>
-          <p>₹${b.price}</p>
-          <button class="cart-btn">Add to Cart</button>
-        </div>
-      `).join("");
-
-      document.querySelectorAll(".book-card").forEach(card => {
-        const bookId = card.dataset.id;
-
-        card.querySelector('img').addEventListener('click', () => {
-          window.location.href = `book-details.html?id=${bookId}`;
-        });
-        card.querySelector('h3').addEventListener('click', () => {
-          window.location.href = `book-details.html?id=${bookId}`;
-        });
-
-        card.querySelector(".cart-btn").addEventListener("click", (e) => {
-          e.stopPropagation();
-          addToCart(bookId);
-        });
-      });
-
-    } catch (e) {
-      console.error("Error fetching books:", e);
+    } else {
+      alert("Failed to add book to cart");
     }
-  }
 
-  document.getElementById("searchBtn").addEventListener("click", () => {
-    const q = document.getElementById("searchInput").value.trim();
-    fetchBooks(q);
-  });
-
-  fetchBooks();
-});
-
-async function addToCart(bookId) {
-  const user = JSON.parse(localStorage.getItem("user"));
-  if (!user) {
-    alert("Please login first.");
-    window.location.href = "login.html";
-    return;
-  }
-
-  const res = await fetch(`/api/cart/`, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ customer_id: user.id, book_id: parseInt(bookId), quantity: 1 })
-  });
-
-  if (res.ok) {
-    alert("Book added to cart!");
-    // Update header cart count
-    const cartCountElem = document.getElementById("cartCount");
-    if (cartCountElem) cartCountElem.textContent = parseInt(cartCountElem.textContent) + 1;
-  }
-}
-document.addEventListener("DOMContentLoaded", () => {
-
-  async function fetchBooks(query = "") {
-    try {
-      const res = await fetch(`/api/books?search=${encodeURIComponent(query)}`);
-      const books = await res.json();
-      const list = document.getElementById("bookList");
-
-      if (books.length === 0) {
-        list.innerHTML = `<p style="text-align:center; color:var(--dark); font-size:1.2rem; margin-top:2rem;">
-                            No books found. Try adding some!
-                          </p>`;
-        return;
-      }
-
-      list.innerHTML = books.map(b => `
-        <div class="book-card" data-id="${b.book_id}">
-          <img src="${b.image || 'assets/images/default-book.jpg'}" alt="${b.title}" style="cursor:pointer;">
-          <h3 style="cursor:pointer;">${b.title}</h3>
-          <p><strong>${b.author}</strong></p>
-          <p>₹${b.price}</p>
-          <button class="cart-btn">Add to Cart</button>
-        </div>
-      `).join("");
-
-      document.querySelectorAll(".book-card").forEach(card => {
-        const bookId = card.dataset.id;
-
-        card.querySelector('img').addEventListener('click', () => {
-          window.location.href = `book-details.html?id=${bookId}`;
-        });
-        card.querySelector('h3').addEventListener('click', () => {
-          window.location.href = `book-details.html?id=${bookId}`;
-        });
-
-        card.querySelector(".cart-btn").addEventListener("click", (e) => {
-          e.stopPropagation();
-          addToCart(bookId);
-        });
-      });
-
-    } catch (e) {
-      console.error("Error fetching books:", e);
-    }
-  }
-
-  document.getElementById("searchBtn").addEventListener("click", () => {
-    const q = document.getElementById("searchInput").value.trim();
-    fetchBooks(q);
-  });
-
-  fetchBooks();
-});
-
-async function addToCart(bookId) {
-  const user = JSON.parse(localStorage.getItem("user"));
-  if (!user) {
-    alert("Please login first.");
-    window.location.href = "login.html";
-    return;
-  }
-
-  const res = await fetch(`/api/cart/`, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ customer_id: user.id, book_id: parseInt(bookId), quantity: 1 })
-  });
-
-  if (res.ok) {
-    alert("Book added to cart!");
-    // Update header cart count
-    const cartCountElem = document.getElementById("cartCount");
-    if (cartCountElem) cartCountElem.textContent = parseInt(cartCountElem.textContent) + 1;
-  }
-}
-document.addEventListener("DOMContentLoaded", () => {
-
-  async function fetchBooks(query = "") {
-    try {
-      const res = await fetch(`/api/books?search=${encodeURIComponent(query)}`);
-      const books = await res.json();
-      const list = document.getElementById("bookList");
-
-      if (books.length === 0) {
-        list.innerHTML = `<p style="text-align:center; color:var(--dark); font-size:1.2rem; margin-top:2rem;">
-                            No books found. Try adding some!
-                          </p>`;
-        return;
-      }
-
-      list.innerHTML = books.map(b => `
-        <div class="book-card" data-id="${b.book_id}">
-          <img src="${b.image || 'assets/images/default-book.jpg'}" alt="${b.title}" style="cursor:pointer;">
-          <h3 style="cursor:pointer;">${b.title}</h3>
-          <p><strong>${b.author}</strong></p>
-          <p>₹${b.price}</p>
-          <button class="cart-btn">Add to Cart</button>
-        </div>
-      `).join("");
-
-      document.querySelectorAll(".book-card").forEach(card => {
-        const bookId = card.dataset.id;
-
-        card.querySelector('img').addEventListener('click', () => {
-          window.location.href = `book-details.html?id=${bookId}`;
-        });
-        card.querySelector('h3').addEventListener('click', () => {
-          window.location.href = `book-details.html?id=${bookId}`;
-        });
-
-        card.querySelector(".cart-btn").addEventListener("click", (e) => {
-          e.stopPropagation();
-          addToCart(bookId);
-        });
-      });
-
-    } catch (e) {
-      console.error("Error fetching books:", e);
-    }
-  }
-
-  document.getElementById("searchBtn").addEventListener("click", () => {
-    const q = document.getElementById("searchInput").value.trim();
-    fetchBooks(q);
-  });
-
-  fetchBooks();
-});
-
-async function addToCart(bookId) {
-  const user = JSON.parse(localStorage.getItem("user"));
-  if (!user) {
-    alert("Please login first.");
-    window.location.href = "login.html";
-    return;
-  }
-
-  const res = await fetch(`/api/cart/`, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ customer_id: user.id, book_id: parseInt(bookId), quantity: 1 })
-  });
-
-  if (res.ok) {
-    alert("Book added to cart!");
-    // Update header cart count
-    const cartCountElem = document.getElementById("cartCount");
-    if (cartCountElem) cartCountElem.textContent = parseInt(cartCountElem.textContent) + 1;
+  } catch (error) {
+    console.error("Error adding to cart:", error);
   }
 }
