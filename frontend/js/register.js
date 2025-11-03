@@ -1,21 +1,38 @@
-// register.js — Handles registration form submission
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.querySelector("#registerForm");
 
-document.querySelector("#registerForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-  const data = {
-    full_name: document.querySelector("#fullname").value.trim(),
-    email: document.querySelector("#email").value.trim(),
-    password: document.querySelector("#password").value.trim(),
-    address: document.querySelector("#address").value.trim(),
-    contact_number: document.querySelector("#contact").value.trim(),
-  };
+    const data = {
+      fullName: document.querySelector("#fullname").value.trim(),
+      email: document.querySelector("#email").value.trim(),
+      password: document.querySelector("#password").value.trim()
+    };
 
-  try {
-    const response = await postData("/auth/register", data);
-    alert("Registration successful! Redirecting to login...");
-    window.location.href = "login.html";
-  } catch (err) {
-    alert("Registration failed: " + err.message);
-  }
+    // quick frontend validation
+    if (!data.fullName || !data.email || !data.password) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      if (res.ok) {
+        alert("Registration successful! Redirecting to login...");
+        window.location.href = "login.html";
+      } else {
+        const msg = await res.text();
+        alert("Registration failed: " + msg);
+      }
+    } catch (err) {
+      console.error("Registration error:", err);
+      alert("Server error. Please try again later.");
+    }
+  });
 });
