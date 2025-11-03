@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "Customers")
+@Table(name = "customers")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -12,10 +12,10 @@ public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;  // now it's just 'id'
+    private Integer id;
 
-    @Column(nullable = false)
-    private String fullName;  // now 'fullName' instead of 'full_name'
+    @Column(name = "full_name", nullable = false)
+    private String fullName;
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -28,7 +28,6 @@ public class Customer {
     private Role role = Role.CUSTOMER;
 
     public enum Role {
-        CUSTOMER,
-        ADMIN
+        CUSTOMER, ADMIN
     }
 }
