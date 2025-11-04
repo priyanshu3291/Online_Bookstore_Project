@@ -1,5 +1,6 @@
 package com.priyanshu.bookstore.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -17,12 +18,13 @@ public class CartItem {
     private Integer cart_item_id;
 
     @NotNull(message = "Cart is required")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id", nullable = false)
+    @JsonBackReference // prevents recursion back to Cart
     private Cart cart;
 
     @NotNull(message = "Book is required")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id", nullable = false)
     private Book book;
 

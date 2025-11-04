@@ -1,91 +1,93 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const user = JSON.parse(localStorage.getItem('user'));
+document.addEventListener("DOMContentLoaded", async () => {
+  const user = JSON.parse(localStorage.getItem("user"));
 
   if (!user) {
-    alert('Please login first to view your cart.');
-    window.location.href = 'login.html';
+    alert("Please login first to view your cart.");
+    window.location.href = "login.html";
     return;
   }
 
-  let cartData = JSON.parse(localStorage.getItem(`cart_${user.id}`)) || [];
-  const cartItemsContainer = document.getElementById('cart-items');
-  const grandTotalElem = document.getElementById('grand-total');
+  const cartItemsContainer = document.getElementById("cart-items");
+  const grandTotalElem = document.getElementById("grand-total");
+  let cartData = [];
 
+  // ✅ Fetch cart data directly from backend
   async function fetchCartDetails() {
-    if (cartData.length === 0) return renderCart();
-
     try {
-      const res = await fetch('http://localhost:8080/api/books');
-      const allBooks = await res.json();
-
-      cartData = cartData.map(item => {
-        const book = allBooks.find(b => b.book_id === item.id);
-        return {...book, quantity: item.quantity};
-      });
-
+      const res = await fetch(`http://localhost:8080/api/cart/${user.id}/`);
+      if (!res.ok) throw new Error("Failed to load cart.");
+      cartData = await res.json();
       renderCart();
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching cart:", err);
+      cartItemsContainer.innerHTML = `<tr><td colspan="6">Failed to load cart.</td></tr>`;
     }
   }
 
+  // ✅ Render cart table
   function renderCart() {
-    cartItemsContainer.innerHTML = '';
+    cartItemsContainer.innerHTML = "";
     let total = 0;
 
-    if (cartData.length === 0) {
+    if (!cartData || cartData.length === 0) {
       cartItemsContainer.innerHTML = `<tr><td colspan="6">Your cart is empty.</td></tr>`;
       grandTotalElem.textContent = 0;
       return;
     }
 
-    cartData.forEach(item => {
-      const row = document.createElement('tr');
+    cartData.forEach((item) => {
+      const book = item.book;
+      const row = document.createElement("tr");
+
+      const subtotal = book.price * item.quantity;
+      total += subtotal;
+
       row.innerHTML = `
-        <td>${item.title}</td>
-        <td>${item.author}</td>
-        <td>₹${item.price}</td>
-        <td><input type="number" min="1" value="${item.quantity}" data-id="${item.book_id}"></td>
-        <td>₹${item.price * item.quantity}</td>
-        <td><button class="remove-btn" data-id="${item.book_id}">Remove</button></td>
+        <td>${book.title}</td>
+        <td>${book.author}</td>
+        <td>₹${book.price}</td>
+        <td><input type="number" min="1" value="${item.quantity}" data-id="${item.cart_item_id}"></td>
+        <td>₹${subtotal}</td>
+        <td><button class="remove-btn" data-id="${item.cart_item_id}">Remove</button></td>
       `;
+
       cartItemsContainer.appendChild(row);
-      total += item.price * item.quantity;
     });
 
-    grandTotalElem.textContent = total;
-    localStorage.setItem(`cart_${user.id}`, JSON.stringify(cartData));
+    grandTotalElem.textContent = total.toFixed(2);
   }
 
-  cartItemsContainer.addEventListener('input', e => {
-    if(e.target.type === 'number') {
+  // ✅ Handle quantity change (local UI update only)
+  cartItemsContainer.addEventListener("input", (e) => {
+    if (e.target.type === "number") {
       const id = parseInt(e.target.dataset.id);
-      const item = cartData.find(i => i.book_id === id);
-      item.quantity = parseInt(e.target.value);
+      const item = cartData.find((i) => i.cart_item_id === id);
+      if (item) {
+        item.quantity = parseInt(e.target.value);
+        renderCart();
+      }
+    }
+  });
+
+  // ✅ Remove item locally (backend delete can be added later)
+  cartItemsContainer.addEventListener("click", async (e) => {
+    if (e.target.classList.contains("remove-btn")) {
+      const id = parseInt(e.target.dataset.id);
+      cartData = cartData.filter((i) => i.cart_item_id !== id);
       renderCart();
     }
   });
 
-  cartItemsContainer.addEventListener('click', e => {
-    if(e.target.classList.contains('remove-btn')) {
-      const id = parseInt(e.target.dataset.id);
-      cartData = cartData.filter(i => i.book_id !== id);
-      renderCart();
-    }
-  });
-
-  function proceedToPayment() {
+  // ✅ Checkout button handler
+  document.querySelector(".checkout-btn")?.addEventListener("click", () => {
     if (cartData.length === 0) {
       alert("Your cart is empty.");
       return;
     }
 
     localStorage.setItem(`order_${user.id}`, JSON.stringify(cartData));
-    window.location.href = 'payment.html';
-  }
-
-  // Bind checkout button
-  document.querySelector('.checkout-btn')?.addEventListener('click', proceedToPayment);
+    window.location.href = "payment.html";
+  });
 
   fetchCartDetails();
 });

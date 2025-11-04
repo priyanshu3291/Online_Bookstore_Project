@@ -1,5 +1,7 @@
 package com.priyanshu.bookstore.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -19,13 +21,15 @@ public class Cart {
     private Integer cart_id;
 
     @NotNull(message = "Customer is required")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)
+    @JsonIgnore // prevent infinite recursion (Cart → Customer → Cart)
     private Customer customer;
 
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime created_at;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference // marks the forward part of the reference
     private List<CartItem> items = new ArrayList<>();
 }
