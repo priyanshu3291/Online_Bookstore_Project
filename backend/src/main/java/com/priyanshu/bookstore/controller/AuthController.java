@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://127.0.0.1:5500") // ✅ allows frontend from VSCode Live Server
+@CrossOrigin(origins = {"http://127.0.0.1:5500", "http://localhost:5500"}) // ✅ Allow frontend from Live Server
 public class AuthController {
 
     private final CustomerRepository customerRepo;
@@ -33,11 +33,13 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", "Email already registered"));
         }
 
-        // ✅ hash password
+        // ✅ Hash password
         customer.setPassword(PasswordUtil.hashPassword(customer.getPassword()));
         customer.setRole(Customer.Role.CUSTOMER);
+
         var saved = customerRepo.save(customer);
 
+        // ✅ Return clean JSON
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
                 "id", saved.getId(),
                 "email", saved.getEmail(),
@@ -65,11 +67,21 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid credentials"));
         }
 
-        return ResponseEntity.ok(Map.of(
+        // ✅ Build user map
+        Map<String, Object> user = Map.of(
                 "id", customer.getId(),
-                "email", customer.getEmail(),
                 "fullName", customer.getFullName(),
-                "role", customer.getRole()
+                "email", customer.getEmail(),
+                "role", customer.getRole().toString()
+        );
+
+        // ✅ Generate a fake token (optional, for frontend)
+        String token = "token_" + customer.getId() + "_" + System.currentTimeMillis();
+
+        // ✅ Final response format for frontend
+        return ResponseEntity.ok(Map.of(
+                "user", user,
+                "token", token
         ));
     }
 }

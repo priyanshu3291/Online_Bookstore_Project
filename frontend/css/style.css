@@ -709,3 +709,19 @@
 #addBookBtn:hover {
   background-color: #005f87;
 }
+#bookList {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 30px;
+  min-height: 200px;
+}
+
+#bookList p {
+  font-size: 1.2em;
+  color: #5a7375;
+  text-align: center;
+  width: 100%;
+  margin-top: 50px;
+}
