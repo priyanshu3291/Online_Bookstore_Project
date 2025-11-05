@@ -12,17 +12,21 @@ document.addEventListener("DOMContentLoaded", async () => {
   let cartData = [];
 
   // ✅ Fetch cart data directly from backend
+  
   async function fetchCartDetails() {
     try {
       const res = await fetch(`http://localhost:8080/api/cart/${user.id}/`);
       if (!res.ok) throw new Error("Failed to load cart.");
-      cartData = await res.json();
+
+      const data = await res.json();
+      cartData = Array.isArray(data) ? data : []; // ensure array
       renderCart();
     } catch (err) {
       console.error("Error fetching cart:", err);
       cartItemsContainer.innerHTML = `<tr><td colspan="6">Failed to load cart.</td></tr>`;
     }
   }
+
 
   // ✅ Render cart table
   function renderCart() {
@@ -69,14 +73,32 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  // ✅ Remove item locally (backend delete can be added later)
+  // ✅ Remove item from cart (backend + UI)
   cartItemsContainer.addEventListener("click", async (e) => {
     if (e.target.classList.contains("remove-btn")) {
       const id = parseInt(e.target.dataset.id);
-      cartData = cartData.filter((i) => i.cart_item_id !== id);
-      renderCart();
+
+      if (confirm("Are you sure you want to remove this item?")) {
+        try {
+          const res = await fetch(`http://localhost:8080/api/cart/remove/${id}`, {
+            method: "DELETE",
+          });
+
+          if (!res.ok) throw new Error("Failed to remove item");
+          const data = await res.json();
+          alert(data.message || "Item removed.");
+
+          // Remove locally too
+          cartData = cartData.filter((i) => i.cart_item_id !== id);
+          renderCart();
+        } catch (err) {
+          console.error("Error removing item:", err);
+          alert("Failed to remove item from cart.");
+        }
+      }
     }
   });
+
 
   // ✅ Checkout button handler
   document.querySelector(".checkout-btn")?.addEventListener("click", () => {

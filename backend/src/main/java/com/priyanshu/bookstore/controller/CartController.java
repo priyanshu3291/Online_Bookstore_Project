@@ -16,8 +16,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/cart")
-@CrossOrigin(origins = {"http://127.0.0.1:5500", "http://localhost:5500"})
-
+@CrossOrigin(origins = {"http://127.0.0.1:5500", "http://localhost:5500", "http://localhost:3000"})
 public class CartController {
 
     private final CartRepository cartRepo;
@@ -57,10 +56,8 @@ public class CartController {
             Customer customer = customerOpt.get();
             Book book = bookOpt.get();
 
-            // find or create cart
-            Cart cart = cartRepo.findAll().stream()
-                    .filter(c -> c.getCustomer().getId().equals(customerId))
-                    .findFirst()
+            // ✅ Find or create cart for the customer
+            Cart cart = cartRepo.findByCustomer_Id(customerId)
                     .orElseGet(() -> {
                         Cart newCart = new Cart();
                         newCart.setCustomer(customer);
@@ -68,23 +65,81 @@ public class CartController {
                         return cartRepo.save(newCart);
                     });
 
-            // create CartItem
-            CartItem item = new CartItem();
-            item.setCart(cart);
-            item.setBook(book);
-            item.setQuantity(quantity);
-            item.setTotal_price(book.getPrice() * quantity);
+            // ✅ Check if book already exists in cart
+            Optional<CartItem> existingItem = cartItemRepo.findByCart_Customer_Id(customerId)
+                    .stream()
+                    .filter(ci -> ci.getBook().getBook_id().equals(bookId))
+                    .findFirst();
 
-            cartItemRepo.save(item);
+            if (existingItem.isPresent()) {
+                CartItem item = existingItem.get();
+                item.setQuantity(item.getQuantity() + quantity);
+                item.setTotal_price(book.getPrice() * item.getQuantity());
+                cartItemRepo.save(item);
+                return ResponseEntity.ok(Map.of("message", "Cart updated successfully!"));
+            }
+
+            // ✅ Add new item
+            CartItem newItem = new CartItem();
+            newItem.setCart(cart);
+            newItem.setBook(book);
+            newItem.setQuantity(quantity);
+            newItem.setTotal_price(book.getPrice() * quantity);
+            cartItemRepo.save(newItem);
+
             return ResponseEntity.ok(Map.of("message", "Book added to cart successfully!"));
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
         }
     }
 
-    // ✅ Get items in user's cart
-    @GetMapping("/{customerId}")
-    public List<CartItem> getCart(@PathVariable Integer customerId) {
-        return cartItemRepo.findByCart_Customer_Id(customerId);
+    // ✅ Get cart items by customer ID (Fixed endpoint)
+    @GetMapping("/customer/{customerId}")
+    public ResponseEntity<?> getCartByCustomer(@PathVariable Integer customerId) {
+        try {
+            List<CartItem> items = cartItemRepo.findByCart_Customer_Id(customerId);
+
+            if (items.isEmpty()) {
+                return ResponseEntity.ok(Collections.emptyList());
+            }
+
+            List<Map<String, Object>> response = new ArrayList<>();
+            for (CartItem item : items) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("cart_item_id", item.getCart_item_id());
+                map.put("quantity", item.getQuantity());
+                map.put("total_price", item.getTotal_price());
+                map.put("book", Map.of(
+                        "book_id", item.getBook().getBook_id(),
+                        "title", item.getBook().getTitle(),
+                        "author", item.getBook().getAuthor(),
+                        "price", item.getBook().getPrice()
+                ));
+                response.add(map);
+            }
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    // ✅ Remove item from cart
+    @DeleteMapping("/remove/{cartItemId}")
+    public ResponseEntity<?> removeCartItem(@PathVariable Integer cartItemId) {
+        try {
+            Optional<CartItem> cartItemOpt = cartItemRepo.findById(cartItemId);
+            if (cartItemOpt.isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Cart item not found"));
+            }
+
+            cartItemRepo.deleteById(cartItemId);
+            return ResponseEntity.ok(Map.of("message", "Item removed from cart successfully"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
+        }
     }
 }

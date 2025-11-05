@@ -1,16 +1,14 @@
 package com.priyanshu.bookstore.util;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class PasswordUtil {
-    private static final PasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    public static String hashPassword(String rawPassword) {
-        return encoder.encode(rawPassword);
+    public static String hashPassword(String plainPassword) {
+        return BCrypt.hashpw(plainPassword, BCrypt.gensalt());
     }
 
-    public static boolean matches(String rawPassword, String encodedPassword) {
-        return encoder.matches(rawPassword, encodedPassword);
+    public static boolean matches(String plainPassword, String hashedPassword) {
+        return BCrypt.checkpw(plainPassword, hashedPassword);
     }
 }
