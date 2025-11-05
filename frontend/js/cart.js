@@ -1,3 +1,4 @@
+// frontend/js/cart.js
 document.addEventListener("DOMContentLoaded", async () => {
   const user = JSON.parse(localStorage.getItem("user"));
 
@@ -11,22 +12,20 @@ document.addEventListener("DOMContentLoaded", async () => {
   const grandTotalElem = document.getElementById("grand-total");
   let cartData = [];
 
-  // ✅ Fetch cart data directly from backend
-  
+  // ✅ Fetch cart data from backend
   async function fetchCartDetails() {
     try {
-      const res = await fetch(`http://localhost:8080/api/cart/${user.id}/`);
+      const res = await fetch(`http://localhost:8080/api/cart/customer/${user.id}`);
       if (!res.ok) throw new Error("Failed to load cart.");
 
       const data = await res.json();
-      cartData = Array.isArray(data) ? data : []; // ensure array
+      cartData = Array.isArray(data) ? data : [];
       renderCart();
     } catch (err) {
       console.error("Error fetching cart:", err);
       cartItemsContainer.innerHTML = `<tr><td colspan="6">Failed to load cart.</td></tr>`;
     }
   }
-
 
   // ✅ Render cart table
   function renderCart() {
@@ -41,10 +40,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     cartData.forEach((item) => {
       const book = item.book;
-      const row = document.createElement("tr");
-
       const subtotal = book.price * item.quantity;
       total += subtotal;
+
+      const row = document.createElement("tr");
 
       row.innerHTML = `
         <td>${book.title}</td>
@@ -88,7 +87,6 @@ document.addEventListener("DOMContentLoaded", async () => {
           const data = await res.json();
           alert(data.message || "Item removed.");
 
-          // Remove locally too
           cartData = cartData.filter((i) => i.cart_item_id !== id);
           renderCart();
         } catch (err) {
@@ -99,8 +97,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-
-  // ✅ Checkout button handler
+  // ✅ Proceed to checkout
   document.querySelector(".checkout-btn")?.addEventListener("click", () => {
     if (cartData.length === 0) {
       alert("Your cart is empty.");

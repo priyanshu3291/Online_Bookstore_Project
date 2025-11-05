@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // ✅ Extract and store only clean, minimal user data
       const userInfo = {
         id: data.user?.id || data.id,
-        name: data.user?.name || data.name,
+        name: data.user?.name || data.fullName || data.name,
         email: data.user?.email || data.email,
         role: data.user?.role || data.role || "customer",
       };
@@ -39,12 +39,16 @@ document.addEventListener("DOMContentLoaded", () => {
         throw new Error("Invalid user data received from server");
       }
 
+      // ✅ Store full user & token like before
       localStorage.setItem("user", JSON.stringify(userInfo));
       if (data.token) localStorage.setItem("token", data.token);
 
+      // ✅ NEW → Store only the userId separately for cart/orders
+      localStorage.setItem("userId", userInfo.id);
+
       alert("Login successful!");
 
-      // ✅ Redirect based on role
+      // ✅ Redirect based on role (unchanged)
       if (userInfo.role.toLowerCase() === "admin") {
         window.location.href = "admin-dashboard.html";
       } else {
@@ -59,6 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Cleanup any broken or partial session data
       localStorage.removeItem("user");
       localStorage.removeItem("token");
+      localStorage.removeItem("userId");
     }
   });
 });

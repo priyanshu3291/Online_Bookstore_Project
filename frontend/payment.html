@@ -37,14 +37,22 @@
 
     <div style="margin-top:30px;">
       <p style="font-size:1.1rem; color:var(--dark);">
-        Your order has been placed using <strong>Cash on Delivery (COD)</strong>.
+        Your order will be placed using <strong>Cash on Delivery (COD)</strong>.
       </p>
       <p>Thank you for shopping at Reader's Heaven!</p>
+
+      <!-- ✅ Added Pay Now Button -->
+      <button id="payNowBtn" class="btn" style="margin-top:10px;">Pay Now</button>
+
+      <!-- ✅ Keep your old return button if you want -->
+      <br><br>
       <button class="btn" onclick="window.location.href='index.html'">Return to Home</button>
     </div>
   </main>
 
   <script src="js/header.js"></script>
+  
+  <!-- ✅ Your original script block kept -->
   <script>
     async function loadOrderSummary() {
       const cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -76,10 +84,41 @@
       }
 
       grandTotalEl.textContent = grandTotal.toFixed(2);
-      localStorage.removeItem("cart");
     }
 
     document.addEventListener("DOMContentLoaded", loadOrderSummary);
+
+
+    // ✅ Added backend call for placing real order
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("payNowBtn").addEventListener("click", async () => {
+
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (!user) {
+          alert("Login required!");
+          window.location.href = "login.html";
+          return;
+        }
+
+        const res = await fetch("http://localhost:8080/api/orders/place", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ customerId: user.id })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          alert(data.error || "Order failed.");
+          return;
+        }
+
+        alert("Order placed successfully!");
+        localStorage.removeItem("cart"); // ✅ clear cart
+        window.location.href = "orders.html"; // ✅ go to order history page
+      });
+    });
   </script>
+
 </body>
 </html>

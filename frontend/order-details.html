@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Details</title>
+  <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    .details-box {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+      background:#fff;
+      border-radius:8px;
+      border:1px solid #ddd;
+    }
+    table {
+      width:100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom:1px solid #ddd;
+      text-align:left;
+    }
+  </style>
+</head>
+
+<body>
+<header class="header">
+  <div class="header-container">
+    <div class="logo">
+      <a href="index.html"><img src="assets/images/logo.png"></a>
+    </div>
+    <div class="header-right" id="header-right"></div>
+  </div>
+</header>
+
+<div class="details-box">
+  <h2>Order Details</h2>
+  <p><b>Order ID:</b> <span id="orderId"></span></p>
+  <p><b>Status:</b> <span id="orderStatus"></span></p>
+  <p><b>Date:</b> <span id="orderDate"></span></p>
+  <p><b>Total:</b> ₹<span id="orderTotal"></span></p>
+
+  <h3>Items</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Book</th>
+        <th>Qty</th>
+        <th>Price</th>
+      </tr>
+    </thead>
+    <tbody id="orderItems"></tbody>
+  </table>
+</div>
+
+<script src="js/header.js"></script>
+<script src="js/order-details.js"></script>
+
+</body>
+</html>

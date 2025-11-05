@@ -11,7 +11,11 @@ document.addEventListener("DOMContentLoaded", () => {
       <a href="index.html" class="nav-link">🏠 Home</a>
       <a href="wishlist.html" class="nav-link">❤️ Wishlist</a>
       <a href="cart.html" class="nav-link">🛒 Cart</a>
-      ${user.role && user.role.toLowerCase() === "admin" ? `<a href="admin-dashboard.html" class="nav-link">⚙️ Admin</a>` : ""}
+      ${user.role && user.role.toLowerCase() === "admin" 
+        ? `<a href="admin-dashboard.html" class="nav-link">📚 Books</a>
+           <a href="admin-orders.html" class="nav-link">📦 Orders</a>`
+        : ""}
+
       <button id="logoutBtn" class="btn btn-logout">🚪 Logout</button>
     `;
 

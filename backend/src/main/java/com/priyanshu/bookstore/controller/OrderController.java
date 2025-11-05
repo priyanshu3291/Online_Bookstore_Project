@@ -132,4 +132,49 @@ public class OrderController {
                 "items", items
         ));
     }
+
+    // ✅ Cancel order (Customer only)
+    @PutMapping("/cancel/{orderId}")
+    public ResponseEntity<?> cancelOrder(@PathVariable Integer orderId) {
+        Optional<Order> orderOpt = orderRepo.findById(orderId);
+        if (orderOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Order not found"));
+        }
+
+        Order order = orderOpt.get();
+
+        // Allow cancel only if not shipped/delivered
+        if (order.getStatus() == Order.OrderStatus.Shipped || order.getStatus() == Order.OrderStatus.Delivered) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Order cannot be canceled now"));
+        }
+
+        order.setStatus(Order.OrderStatus.Cancelled);
+        orderRepo.save(order);
+
+        return ResponseEntity.ok(Map.of("message", "Order canceled successfully"));
+    }
+
+    // ✅ Admin: update order status
+    @PutMapping("/update-status/{orderId}")
+    public ResponseEntity<?> updateOrderStatus(
+            @PathVariable Integer orderId,
+            @RequestBody Map<String, String> request) {
+
+        Optional<Order> orderOpt = orderRepo.findById(orderId);
+        if (orderOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Order not found"));
+        }
+
+        String status = request.get("status");
+        Order order = orderOpt.get();
+
+        try {
+            order.setStatus(Order.OrderStatus.valueOf(status));
+            orderRepo.save(order);
+            return ResponseEntity.ok(Map.of("message", "Order status updated"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Invalid status value"));
+        }
+    }
+
 }
